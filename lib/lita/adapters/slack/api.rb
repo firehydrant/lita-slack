@@ -1,9 +1,10 @@
 require 'faraday'
 
-require_relative 'team_data'
-require_relative 'slack_im'
-require_relative 'slack_user'
-require_relative 'slack_channel'
+require 'lita/adapters/slack/team_data'
+require 'lita/adapters/slack/slack_im'
+require 'lita/adapters/slack/slack_user'
+require 'lita/adapters/slack/slack_source'
+require 'lita/adapters/slack/slack_channel'
 
 module Lita
   module Adapters
@@ -62,6 +63,29 @@ module Lita
             as_user: true,
             channel: channel_id,
             text: messages.join("\n"),
+          )
+        end
+
+        def reply_in_thread(channel_id, messages, thread_ts)
+          call_api(
+            "chat.postMessage",
+            as_user: true,
+            channel: channel_id,
+            text: messages.join("\n"),
+            thread_ts: thread_ts
+          )
+        end
+
+        def delete(channel, ts)
+          call_api("chat.delete", channel: channel, ts: ts)
+        end
+
+        def update_attachments(channel, ts, attachments)
+          call_api(
+            "chat.update",
+            channel: channel,
+            ts: ts,
+            attachments: MultiJson.dump(attachments.map(&:to_hash))
           )
         end
 
