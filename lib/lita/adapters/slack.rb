@@ -43,8 +43,8 @@ module Lita
       def send_messages(target, messages)
         api = API.new(config)
         channel = channel_for(target)
-        timestamp = target.try(:timestamp)
-        thread_ts = target.try(:thread_ts)
+        timestamp = target&.timestamp
+        thread_ts = target&.thread_ts
 
         strings = messages.select { |s| s.is_a?(String) }
         symbols = messages.select { |s| s.is_a?(Symbol) }
